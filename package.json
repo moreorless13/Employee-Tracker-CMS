@@ -1,0 +1,26 @@
+{
+  "name": "Employee-Tracker-CMS",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moreorless13/Employee-Tracker-CMS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/moreorless13/Employee-Tracker-CMS/issues"
+  },
+  "homepage": "https://github.com/moreorless13/Employee-Tracker-CMS#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "inquirer": "^8.2.0",
+    "mysql2": "^2.3.1"
+  }
+}
