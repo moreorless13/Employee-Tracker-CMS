@@ -1,4 +1,3 @@
-SELECT 
+SELECT role.id, role.title, department.name, role.salary
 FROM role
-LEFT JOIN department
-ON department.id = role.department;
+Inner JOIN department ON role.department_id = department.id;

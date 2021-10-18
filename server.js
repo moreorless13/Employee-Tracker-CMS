@@ -28,11 +28,11 @@ const db = mysql.createConnection(
 // create a new department
 
 app.post('/api/new-department', ({ body }, res) => {
-  const sql = `INSERT INTO department (name)
+  let sql = `INSERT INTO department (name)
   VALUES (?)`;
-  const params = [body.name];
+  let params = [body.name];
 
-  db.query(sql, params, (err, res) => {
+  db.query(sql, params, (err, result) => {
     if (err) {
       res.status(400).json({ error: err.message });
       return;
@@ -47,7 +47,7 @@ app.post('/api/new-department', ({ body }, res) => {
 
 // read all departments
 app.get('/api/department', (req, res) => {
-  const sql = `SELECT id, name AS title FROM department`;
+  let sql = `SELECT id, name FROM department`;
   
   db.query(sql, (err, rows) => {
     if (err) {
@@ -64,8 +64,8 @@ app.get('/api/department', (req, res) => {
 // delete a department
 
 app.delete('/api/department/:id', (req, res) => {
-  const sql = `DELETE FROM department WHERE id = ?`;
-  const params = [req.params.id];
+  let sql = `DELETE FROM department WHERE id = ?`;
+  let params = [req.params.id];
   
   db.query(sql, params, (err, result) => {
     if (err) {
@@ -85,26 +85,36 @@ app.delete('/api/department/:id', (req, res) => {
 });
 
 // create new role
-app.post('/api/new-role', ({ body }, res) => {
-  const sql = `INSERT INTO role (name)
-  VALUES (?)`;
-  const params = [body.name];
+app.post('/api/role', (req, res) => {
 
-  db.query(sql, params, (err, res) => {
+  console.log(req.body)
+  let sql = `INSERT INTO role (title, salary, department_id) 
+    VALUES (?, ?, ?)`;
+
+  const { title, salary, department_id } = req.body;
+
+  let params = [title, salary, department_id];
+  let response;
+
+  db.query(sql, params, (err, result) => {
+    console.log(params);
     if (err) {
-      res.status(400).json({ error: err.message });
+      console.error(err);
+      res.status(500).json('Error in posting new role');
       return;
     } else {
-      res.json({
-        message: 'success',
-        data: body
-      });
+      response = {
+        message: 'Success',
+        data: req.body,
+      }
+      res.status(201).json(response);
     };
-  });
+  })
+  
 });
 // read all roles
 app.get('/api/role', (req, res) => {
-  const sql = `SELECT id, name AS title FROM role`;
+  let sql = `SELECT * FROM role`;
   
   db.query(sql, (err, rows) => {
     if (err) {
@@ -119,8 +129,8 @@ app.get('/api/role', (req, res) => {
 });
 // delete a role
 app.delete('/api/role/:id', (req, res) => {
-  const sql = `DELETE FROM role WHERE id = ?`;
-  const params = [req.params.id];
+  let sql = `DELETE FROM role WHERE id = ?`;
+  let params = [req.params.id];
   
   db.query(sql, params, (err, result) => {
     if (err) {
@@ -139,6 +149,23 @@ app.delete('/api/role/:id', (req, res) => {
   });
 });
 // create new employee
+// app.post('/api/new-role', ({ body }, res) => {
+//   const sql = `INSERT INTO role (name)
+//   VALUES (?)`;
+//   const params = [body.name];
+
+//   db.query(sql, params, (err, res) => {
+//     if (err) {
+//       res.status(400).json({ error: err.message });
+//       return;
+//     } else {
+//       res.json({
+//         message: 'success',
+//         data: body
+//       });
+//     };
+//   });
+// });
 // read all employees
 // delete an employee
 
