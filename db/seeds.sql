@@ -15,12 +15,12 @@ VALUES ('Sales Lead', 100000, 1),
         ('Legal Team Lead', 250000, 4),
         ('Lawyer', 190000, 4);
 
--- INSERT INTO employee (employee_id, first_name, last_name, role, department, salary, manager_name)
--- VALUES (1, 'John', 'Doe', 1, 1, 100000, NULL), 
---         (2, 'Mike', 'Chan', 2, 1, 80000, 'John Doe'),
---         (3, 'Ashley', 'Rodriguez', 3, 2, 150000, NULL),
---         (4, 'Kevin', 'Tupik', 4, 2, 120000, 'Ashley Rodriguez'),
---         (5, 'Kunal', 'Singh', 5, 3, 160000, NULL),
---         (6, 'Malia', 'Brown', 6, 3, 125000, 'Kunal Singh'),
---         (7, 'Sarah', 'Lourd', 7, 4, 250000, NULL),
---         (8, 'Tom', 'Allen', 8, 4, 190000, 'Sarah Lourd');       
+INSERT INTO employee (id, first_name, last_name, role_id, manager_name)
+VALUES (1, 'John', 'Doe', 1, NULL), 
+        (2, 'Mike', 'Chan', 2, 'John Doe'),
+        (3, 'Ashley', 'Rodriguez', 3, NULL),
+        (4, 'Kevin', 'Tupik', 4, 'Ashley Rodriguez'),
+        (5, 'Kunal', 'Singh', 5, NULL),
+        (6, 'Malia', 'Brown', 6, 'Kunal Singh'),
+        (7, 'Sarah', 'Lourd', 7, NULL),
+        (8, 'Tom', 'Allen', 8, 'Sarah Lourd');       
