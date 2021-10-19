@@ -1,5 +1,15 @@
 const department = require('express').Router();
-const db = require('./database.js');
+const Database = require('./database.js');
+
+const db = new Database(
+    {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: 'company_db'
+    },
+    console.log(`Connected to the database.`)
+);
 
 department.get('/', (req, res) => {
   let sql = `SELECT id, name FROM department`;

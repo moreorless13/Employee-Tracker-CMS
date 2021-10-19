@@ -1,5 +1,3 @@
-const employee = require('./employee.js');
-
 express = require('express');
 
 departmentRouter = require('./department.js');

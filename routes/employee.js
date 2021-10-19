@@ -1,8 +1,21 @@
 const employee = require('express').Router();
-const db = require('./database.js');
+const Database = require('./database.js');
+
+const db = new Database(
+    {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: 'company_db'
+    },
+    console.log(`Connected to the database.`)
+);
 
 employee.get('/', (req, res) => {
-  let sql = `SELECT * FROM employee`;
+  let sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, employee.manager_name
+FROM ((employee
+INNER JOIN role ON employee.role_id = role.id)
+INNER JOIN department ON employee.department_id = department.id);`;
   
   db.query(sql, (err, rows) => {
     if (err) {
