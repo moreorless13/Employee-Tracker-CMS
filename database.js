@@ -1,7 +1,4 @@
 const mysql = require('mysql2');
-const dotenv = require('dotenv');
-dotenv.config({ path: './.env' });
-
 class Database {
     constructor(config){
         this.connection = mysql.createConnection(config);
