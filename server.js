@@ -171,7 +171,21 @@ async function removeEmployee(employeeInfo) {
   console.log(`${employee} with employee id: ${employeeId} was removed.`);
 }
 
-async function updateEmployeeRole() {
+async function updateEmployeeRole(employeeInfo) {
+  let roleId = await getRoleId(employeeInfo.role);
+  let employee = await getFullName(employeeInfo.employeeName);
+  console.log(roleId)
+  console.log(employee)
+  console.log(employee[0])
+  console.log(employee[1])
+
+  let sql = 'UPDATE employee SET role_id=? WHERE employee.first_name=? AND employee.last_name=?';
+  let args = [roleId[0], employee[0], employee[1]];
+  let rows = await db.query(sql, args)
+  let query = 'UPDATE employee SET department_id=? WHERE employee.first_name=? AND employee.last_name=?';
+  let args2 = [roleId[1], employee[0], employee[1]]
+  let rows2 = await db.query(query, args2);
+  console.log(`${employee} role updated!`)
 
 }
 
@@ -242,6 +256,30 @@ async function getRemoveEmployeeInfo() {
         name: "employeeName",
         choices: [
           ...employees
+        ]
+      }
+    ])
+}
+
+async function updateEmployeeRoleInfo() {
+  let employees = await getEmployeeNames();
+  let roles = await getRoles();
+  return inquirer
+    .prompt([
+      {
+        type: 'list',
+        message: "Which employee's role would you like to update?",
+        name: 'employeeName',
+        choices: [
+          ...employees
+        ]
+      },
+      {
+        type: 'list',
+        message: "What is their new role?",
+        name: 'role',
+        choices: [
+          ...roles
         ]
       }
     ])
