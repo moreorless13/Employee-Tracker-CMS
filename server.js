@@ -17,36 +17,36 @@ const db = new Database(
 
 async function viewDepartments() {
   console.log("");
-  let query = "SELECT id, name FROM department";
-  const rows = await db.query(query);
+  let sql = "SELECT id, name FROM department";
+  let rows = await db.query(sql);
   console.table(rows);
 }
 
 async function viewRoles() {
   console.log("");
   let sql = 'SELECT role.id, role.title, department.name, role.salary FROM role INNER JOIN department ON role.department_id = department.id';
-  const rows = await db.query(sql);
+  let rows = await db.query(sql);
   console.table(rows);
 }
 
 async function viewEmployees() {
   console.log("");
   let sql = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, employee.manager_name FROM ((employee INNER JOIN role ON employee.role_id = role.id) INNER JOIN department ON employee.department_id = department.id);';
-  const rows = await db.query(sql);
+  let rows = await db.query(sql);
   console.table(rows);
 }
 
 
 async function viewEmployeesByDepartment() {
   console.log("");
-  let sql = "SELECT first_name, last_name, department.name FROM ((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON department_id = department.id);";
-  const rows = await db.query(sql);
+  let sql = "SELECT first_name, last_name, department.name FROM ((employee INNER JOIN role ON role_id = role.id) INNER JOIN department ON employee.department_id = department.id);";
+  let rows = await db.query(sql);
   console.table(rows);
 }
 
 async function addDepartment(departmentInfo) {
-  const departmentName = departmentInfo.departmentName
-  let sql = 'INSERT INTO department (name) VALUES (?)';
+  let departmentName = departmentInfo.departmentName
+  let sql = 'INSERT into department (name) VALUES (?)';
   let args = [departmentName];
   const rows = await db.query(sql, args);
   console.log(`${departmentName} added!`);
@@ -54,7 +54,7 @@ async function addDepartment(departmentInfo) {
 
 async function getDepartmentNames() {
   let sql = 'SELECT name FROM department';
-  const rows = await db.query(sql);
+  let rows = await db.query(sql);
 
   let departments = [];
   for(const row of rows) {
@@ -65,26 +65,29 @@ async function getDepartmentNames() {
 }
 
 async function getDepartmentId(departmentName) {
-    let sql = "SELECT * FROM department WHERE department.name=?";
-    let args = [departmentName];
-
-    const rows = await db.query(sql, args);
-    return rows[0].id;
+  let sql = "SELECT * FROM department WHERE department.name=?";
+  let args = [departmentName];
+  console.log(departmentName);
+  let rows = await db.query(sql, args);
+  console.log(rows)
+  console.log(rows[0].id);
+  return rows[0].id;
 }
 
 async function addRole(roleInfo){
-  const departmentId = await getDepartmentId(roleInfo.departmentName);
-  const salary = roleInfo.salary;
-  const title = roleInfo.roleTitle;
-  let sql = 'INSERT INTO role (title, salary, department_id VALUES (?, ?, ?)';
-  let args = [title, salary, departmentId];
+  let departmentId = await getDepartmentId(roleInfo.departmentName);
+  let salary = roleInfo.salary;
+  let roleName = roleInfo.roleName;
+  let sql = "INSERT into role (title, salary, department_id) VALUES (?, ?, ?)";
+  let args = [roleName, salary, departmentId];
   const rows = await db.query(sql, args);
+  console.log(rows);
   console.log(`${roleName} added!`)
 }
 
 async function getRoles(){
   let sql = "SELECT title FROM role";
-  const rows = await db.query(sql);
+  let rows = await db.query(sql);
   let roles = [];
   for(const row of rows) {
     roles.push(row.title);
@@ -96,193 +99,74 @@ async function getRoles(){
 async function getRoleId(roleName) {
   let sql = "SELECT * FROM role WHERE role.title=?";
   let args = [roleName];
-  const rows = await db.query(sql, args);
+  let rows = await db.query(sql, args);
+  console.log(rows[0])
+  return [rows[0].id, rows[0].department_id];
+}
+
+async function getEmployeeId(fullName) {
+  let employee = await getFullName(fullName);
+  let sql = "SELECT id FROM employee WHERE employee.first_name=? AND employee.last_name=?";
+  let args = [employee[0], employee[1]];
+  let rows = await db.query(sql, args);
   return rows[0].id;
 }
 
+async function getEmployeeNames(){
+  let sql = 'SELECT * FROM employee';
+  let rows = await db.query(sql);
+  let employeeNames = [];
+  for(const row of rows){
+    employeeNames.push(employee.first_name + " " + employee.last_name)
+  };
+  return employeeNames;
+}
 
+async function getFullName(fullName) {
+  let employee = fullName.split(' ');
+  if (employee.length == 2) {
+    return employee;
+  } else {
+    let last_name = employee[employee.length-1];
+    let first_name = " ";
+    for(let i=0; i<employee.length-1; i++) {
+      first_name = first_name + employee[i] + " ";
+    }
+    return [first_name.trim(), last_name];
+  }
+}
 
-// app.get('/api/department', (req, res) => {
-  
-  
-//   db.query(sql, (err, rows) => {
-//     if (err) {
-//       res.status(500).json({ error: err.message });
-//        return;
-//     }
-//     res.json({
-//       message: 'success',
-//       data: rows
-//     });
-//   });
-// });
+async function getManagers() {
+  let sql = 'SELECT * FROM employee WHERE manager_name IS NULL';
 
-// app.post('/api/department', ({ body }, res) => {
-  
-//   let params = [body.name];
+  let rows = await db.query(sql);
+  let managers = [];
+  for(const employee of rows) {
+    managers.push(employee.first_name + " " + employee.last_name);
+  }
 
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.status(400).json({ error: err.message });
-//       return;
-//     } else {
-//       res.json({
-//         message: 'success',
-//         data: body
-//       });
-//     };
-//   });
-// });
+  return managers;
+}
 
-// app.delete('/api/department/:id', (req, res) => {
-//   let sql = `DELETE FROM department WHERE id = ?`;
-//   let params = [req.params.id];
-  
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.status(400).json({ error: res.message });
-//     } else if (!result.affectedRows) {
-//       res.json({
-//       message: 'Department not found'
-//       });
-//     } else {
-//       res.json({
-//         message: 'deleted',
-//         changes: result.affectedRows,
-//         id: req.params.id
-//       });
-//     }
-//   });
-// });
+async function addEmployee(employeeInfo) {
+  let roleId = await getRoleId(employeeInfo.role);
+  let manager_name = employeeInfo.manager;
+  console.log(roleId);
+  let role_id = roleId[0]
+  let department_id = roleId[1]
+  let sql = "INSERT INTO employee (first_name, last_name, role_id, department_id, manager_name) VALUES (?, ?, ?, ?, ?)";
+  let args = [employeeInfo.first_name, employeeInfo.last_name, role_id, department_id, manager_name];
+  const rows = await db.query(sql, args);
+  console.log(`${employeeInfo.first_name} ${employeeInfo.last_name} added!`)
+}
 
-// app.get('/api/role', (req, res) => {
-//   let sql = `SELECT role.id, role.title, department.name, role.salary FROM role INNER JOIN department ON role.department_id = department.id`;
-  
-//   db.query(sql, (err, rows) => {
-//     if (err) {
-//       res.status(500).json({ error: err.message });
-//        return;
-//     }
-//     res.json({
-//       message: 'success',
-//       data: rows
-//     });
-//   });
-// });
+async function removeEmployee() {
 
-// app.post('/api/role', (req, res) => {
+}
 
-//   console.log(req.body)
-//   let sql = `INSERT INTO role (title, salary, department_id) 
-//     VALUES (?, ?, ?)`;
+async function updateEmployeeRole() {
 
-//   const { title, salary, department_id } = req.body;
-
-//   let params = [title, salary, department_id];
-//   let response;
-
-//   db.query(sql, params, (err, result) => {
-//     console.log(params);
-//     if (err) {
-//       console.error(err);
-//       res.status(500).json('Error in posting new role');
-//       return;
-//     } else {
-//       res.status(201).json({
-//           message: 'success',
-//           data: req.body
-//       });
-//     };
-//   })
-  
-// });
-
-// app.delete('/api/role/:id', (req, res) => {
-//   let sql = `DELETE FROM role WHERE id = ?`;
-//   let params = [req.params.id];
-  
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.status(400).json({ error: res.message });
-//     } else if (!result.affectedRows) {
-//       res.json({
-//       message: 'Role not found'
-//       });
-//     } else {
-//       res.json({
-//         message: 'deleted',
-//         changes: result.affectedRows,
-//         id: req.params.id
-//       });
-//     }
-//   });
-// });
-
-// app.get('/api/employee', (req, res) => {
-//   let sql = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary, employee.manager_name
-// FROM ((employee
-// INNER JOIN role ON employee.role_id = role.id)
-// INNER JOIN department ON employee.department_id = department.id);`;
-  
-//   db.query(sql, (err, rows) => {
-//     if (err) {
-//       res.status(500).json({ error: err.message });
-//        return;
-//     }
-//     res.json({
-//       message: 'success',
-//       data: rows
-//     });
-//   });
-// });
-
-// app.post('/api/employee', (req, res) => {
-
-//   console.log(req.body)
-//   let sql = `INSERT INTO employee (first_name, last_name, role_id, manager_name) 
-//     VALUES (?, ?, ?, ?)`;
-
-//   const { first_name, last_name, role_id, manager_name } = req.body;
-
-//   let params = [first_name, last_name, role_id, manager_name];
-//   let response;
-
-//   db.query(sql, params, (err, result) => {
-//     console.log(params);
-//     if (err) {
-//       console.error(err);
-//       res.status(500).json('Error in posting new role');
-//       return;
-//     } else {
-//       res.status(201).json({
-//           message: 'success',
-//           data: req.body
-//       });
-//     };
-//   })
-  
-// });
-
-// app.delete('/api/employee/:id', (req, res) => {
-//   let sql = `DELETE FROM employee WHERE id = ?`;
-//   let params = [req.params.id];
-  
-//   db.query(sql, params, (err, result) => {
-//     if (err) {
-//       res.status(400).json({ error: res.message });
-//     } else if (!result.affectedRows) {
-//       res.json({
-//       message: 'Employee not found'
-//       });
-//     } else {
-//       res.json({
-//         message: 'deleted',
-//         changes: result.affectedRows,
-//         id: req.params.id
-//       });
-//     }
-//   });
-// });
+}
 
 async function promptUser() {
     return inquirer
@@ -307,7 +191,9 @@ async function promptUser() {
         ])
 }
 
-async function getAddEmployeeInfo(){
+async function getEmployeeInfo(){
+  let roles = await getRoles();
+  let managers = await getManagers();
   return inquirer
     .prompt([
       {
@@ -371,12 +257,12 @@ async function getRoleInfo() {
       {
         type: 'input',
         message: "What is the title of the new role?",
-        name: 'roleTitle'
+        name: 'roleName'
       },
       {
         type: 'input',
         message: 'What is the salary of the new role?',
-        name: 'salary'
+        name: 'salary',
       },
       {
         type: 'list',
@@ -410,7 +296,7 @@ async function promptHandler() {
       }
       case 'Add Role': {
         const newRole = await getRoleInfo();
-        console.log.og("Add a new role");
+        console.log("Add a new role");
         await addRole(newRole);
         break;
       }

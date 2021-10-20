@@ -5,15 +5,17 @@ USE company_db;
 SELECT DATABASE();
 
 CREATE TABLE department (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(30) NOT NULL
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(30) NOT NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE role (
-    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(30),
-    salary DECIMAL,
+    salary INT,
     department_id INT,
+    PRIMARY KEY (id),
     FOREIGN KEY (department_id)
     REFERENCES department(id)
     ON DELETE SET NULL

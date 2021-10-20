@@ -18,12 +18,12 @@ class Database {
     }
 
     close(){
-        return new Promise((res,rej) => {
+        return new Promise((resolve, reject) => {
             this.connection.end(err => {
                 if (err) {
-                    return rej(err);
+                    return reject(err);
                 }
-                res();
+                resolve();
             });
         });
     }
