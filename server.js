@@ -116,7 +116,7 @@ async function getEmployeeNames(){
   let sql = 'SELECT * FROM employee';
   let rows = await db.query(sql);
   let employeeNames = [];
-  for(const row of rows){
+  for(const employee of rows){
     employeeNames.push(employee.first_name + " " + employee.last_name)
   };
   return employeeNames;
@@ -160,8 +160,15 @@ async function addEmployee(employeeInfo) {
   console.log(`${employeeInfo.first_name} ${employeeInfo.last_name} added!`)
 }
 
-async function removeEmployee() {
-
+async function removeEmployee(employeeInfo) {
+  let employee = employeeInfo.employeeName;
+  console.log(employee);
+  let employeeId = await getEmployeeId(employee);
+  console.log(employeeId)
+  let sql = 'DELETE FROM employee WHERE id=?';
+  let args = [employeeId];
+  let rows = await db.query(sql, args);
+  console.log(`${employee} with employee id: ${employeeId} was removed.`);
 }
 
 async function updateEmployeeRole() {
@@ -226,6 +233,7 @@ async function getEmployeeInfo(){
 }
 
 async function getRemoveEmployeeInfo() {
+  let employees = await getEmployeeNames();
   return inquirer
     .prompt([
       {
