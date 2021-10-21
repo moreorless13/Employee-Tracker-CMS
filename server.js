@@ -148,6 +148,15 @@ async function getManagers() {
   return managers;
 }
 
+async function viewEmployeesByManager(mangerInfo){
+  let manager_name = mangerInfo.manager;
+  console.log("");
+  let sql = "SELECT first_name, last_name FROM employee WHERE manager_name=?";
+  let args = [manager_name];
+  let rows = await db.query(sql, args);
+  console.table(rows);
+}
+
 async function addEmployee(employeeInfo) {
   let roleId = await getRoleId(employeeInfo.role);
   let manager_name = employeeInfo.manager;
@@ -206,6 +215,7 @@ async function promptUser() {
                   "View Employees",
                   "View Employees by department",
                   "View Roles",
+                  "View Employees by manager",
                   "Exit"
                 ]
             }
@@ -321,6 +331,21 @@ async function getRoleInfo() {
     ])
 }
 
+async function getManagerInfo() {
+  const managers = await getManagers();
+  return inquirer
+    .prompt([
+      {
+        type: 'list',
+        message: "Which manager?",
+        name: 'manager',
+        choices: [
+          ...managers
+        ]
+      }
+    ])
+}
+
 
 async function promptHandler() {
   let exitLoop = false;
@@ -370,6 +395,11 @@ async function promptHandler() {
       }
       case 'View Roles': {
         await viewRoles();
+        break;
+      }
+      case "View Employees by manager": {
+        const manager = await getManagerInfo();
+        await viewEmployeesByManager(manager);
         break;
       }
       case 'Exit': {
