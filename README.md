@@ -11,6 +11,7 @@
 ## Description:
 
 * CLI based Employee tracker CMS. 
+* Video Walk through: https://drive.google.com/file/d/1Y5njLzrg0fUTlrEcmKxaNAVUQ8RPDWVz/view?usp=sharing
     
 ## Installation:
 ```
